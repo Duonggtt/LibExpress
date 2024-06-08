@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org"
+      th:replace="~{admin/layout/layout :: main-fragment( ~{:: #content}, ~{:: #js})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+    </style>
+
+</head>
+    <body>
+        <!-- content  -->
+        <div id="content">
+            <!-- navbar -->
+            <nav class="content-navbar navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+
+                    <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                        <i class="fa fa-bars"></i>
+                        <span class="sr-only">Toggle Menu</span>
+                    </button>
+                    <!-- <button class="btn d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="fa-solid fa-gear"></i>
+                    </button> -->
+
+                    <div class="" id="navbarSupportedContent">
+
+                        <ul class="nav ml-auto">
+                            <li class="nav-item" style="margin-top: 4px; margin-right: 10px;">
+                                <!-- Rounded switch -->
+                                <label class="switch">
+                                    <input type="checkbox">
+                                    <span class="slider round"></span>
+                                </label>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Log out</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <!-- noi dung chinh -->
+            <div class="content-header">
+                <!-- header-content -->
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-12">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a th:href="@{/lib-express/admin/dashboard}">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item active">
+                                    Chi tiết phiếu mượn
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="container-fluid">
+                        <div class="row py-2">
+                            <div class="col-6">
+                                <a th:href="@{/lib-express/admin/borrow-list}" type="button" class="btn btn-default">
+                                    <i class="fas fa-chevron-left"></i> Quay lại
+                                </a>
+                                <button type="button" class="btn btn-info px-4" id="btn-update">
+                                    Lưu
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-8">
+
+                                                <div class="form-group d-flex flex-column">
+                                                    <label>Trạng thái</label>
+                                                    <input style="width: 120px;height: 40px;border-radius: 5px;border: 1px solid #ccc;text-align: center"
+                                                           th:value="${borrow.status}" th:class="${borrow.status == 'Đang mượn' ? 'text-warning' : 'text-error'}"
+                                                           disabled type="text" class="form-control" id="status"/>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Tên độc giả</label>
+                                                    <input th:value="${borrow.username}" disabled type="text" class="form-control" id="author_name"/>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Tên thủ thư</label>
+                                                    <input th:value="${lib}" disabled type="text" class="form-control" id="librarian_name"/>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Ngày mượn</label>
+                                                    <input th:value="${#dates.format(borrow.borrowDate, 'HH:mm:ss - dd/MM/yyyy')}" disabled type="text" class="form-control" id="borrow_date"/>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Ngày trả</label>
+                                                    <input th:value="${#dates.format(borrow.returnDate, 'HH:mm:ss - dd/MM/yyyy')}"  disabled type="text" class="form-control" id="return_date"/>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label>Mã phiếu mượn</label>
+                                                    <input th:value="${borrow.id}" disabled type="text" class="form-control" id="borrowId"/>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Mã đọc giả</label>
+                                                    <input th:value="${borrow.user.id}" type="text" class="form-control" id="userId"/>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Mã thủ thư</label>
+                                                    <input th:value="${borrow.librarian.id}" type="text" class="form-control" id="librarianId"/>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Số ngày mượn</label>
+                                                    <input th:value="${borrow.borrowDateQuantity}" type="text" class="form-control" id="dateQuantity"/>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <!-- tim kiem sach -->
+                                            <div class="col-md-3 ">
+                                                <label style="margin: 0 5px 15px 0;">Tìm kiếm sách</label>
+                                                <button type="button" class="btn btn-success" id="btn-add">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="card">
+                                                    <div class="card-body d-flex ">
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                <label>Mã sách</label>
+                                                                <form class="d-flex mb-3">
+                                                                    <input  id="selectedCategoryContent" name="keyword" required type="text" class="form-control" placeholder="Tìm kiếm..." style="position: relative;">
+                                                                    <div class="input-group-append mr-3" style="position: absolute; right: 0;"><button onclick="searchBooks()" type="button" class="btn btn-primary"><i class="fas fa-search"></i></button></div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-10 d-flex justify-content-end">
+
+                                                            <div class="col-md-5">
+                                                                <div class="form-group">
+                                                                    <label>Tên sách</label>
+                                                                    <input disabled type="text" class="form-control" id="title_search"/>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <label>Tác giả</label>
+                                                                    <input disabled type="text" class="form-control" id="author_search"/>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <label>Nhà xuất bản</label>
+                                                                    <input disabled type="text" class="form-control" id="publisher_search"/>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                                <button style="margin-top: 20px" type="button" class="btn btn-info px-4" id="btn-ref">
+                                                    <a style="color: #fff" th:href="@{/lib-express/admin/borrow-list/{id}/detail (id=${borrow.id})}"><i class="fas fa-redo"></i> Refresh</a>
+                                                </button>
+                                            </div>
+
+                                            <hr>
+                                            <!-- //danh sach sach -->
+                                            <div class="col-12">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <table class="table table-bordered table-hover" id="book-list">
+                                                            <thead>
+                                                            <tr>
+                                                                <th>ID</th>
+                                                                <th>Tên sách</th>
+                                                                <th>Tác giả</th>
+<!--                                                                <th>Danh mục</th>-->
+                                                                <th>Nhà xuất bản</th>
+                                                                <th>Giá tiền</th>
+                                                                <th>Chi tiết</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr th:each="book : ${bookList}">
+                                                                <td th:text="${book.id}">1</td>
+                                                                <td >
+                                                                    <a href="" th:id="'modal' + ${book.id}" class="openModalBtn" th:text="${book.title}" th:data-modal-id="'modal' + ${book.id}">sách j đó mà chưa nghĩ ra tên</a>
+                                                                </td>
+                                                                <td th:text="${book.author.name}">Dương Tùng</td>
+<!--                                                                <td >-->
+<!--                                                                    <span th:each="category : ${book.categories}" th:text="${category.name}" class="badge badge-info mr-1">Danh mục 1</span>-->
+<!--                                                                </td>-->
+                                                                <td th:text="${book.publisher.name}">Kim Đồng</td>
+                                                                <td th:text="${book.price}">680000 <span>vnđ</span></td>
+                                                                <td><a href="" class="text-error" onclick="confirmDelete('Bạn có chắc muốn xóa không?', this)" th:data-book-id="${book.id}">Xóa</a></td>
+                                                            </tr>
+
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Modal -->
+                <div id="myModal" class="modal" style="display:none;background-color: #fff; width: 900px;height: 500px; position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);border-radius: 10px;box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;padding: 10px;z-index: 11">
+                        <div id="detail-form" class="modal-detail" >
+                        <span class="close" id="closeModalBtn" onmouseover=" this.style.cursor='pointer'">&times;</span>
+                        <p>Thông tin chi tiết sẽ hiển thị ở đây...</p>
+                    </div>
+                </div>
+                <!-- Nền mờ xung quanh modal -->
+                <div class="overlay" id="overlay" style="display: none;position: fixed;top:0;left:0;width: 100%;height: 100%;background-color: rgba(0, 0, 0, 0.5);z-index: 0"></div>
+
+                <script>
+                    // JavaScript để xử lý sự kiện click để mở modal
+                    document.addEventListener("DOMContentLoaded", function() {
+                    document.querySelectorAll('.openModalBtn').forEach(function(button) {
+                        button.addEventListener('click', function(event) {
+                            event.preventDefault();
+                            var modalId = button.getAttribute('data-modal-id');
+                            console.log(modalId);
+                            openModal(modalId);
+                        });
+                    });
+
+                    // JavaScript để xử lý sự kiện click để đóng modal
+                    document.getElementById('closeModalBtn').addEventListener('click', function() {
+                        closeModal();
+                    });
+
+                    // JavaScript để ẩn modal khi click ra ngoài modal
+                    document.getElementById('overlay').addEventListener('click', function() {
+                        closeModal();
+                    });
+                        function openModal(modalId) {
+                            console.log('Attempting to open modal with id:', modalId);
+
+                            var modal = document.getElementById('myModal');
+                            var overlay = document.getElementById('overlay');
+
+                            modal.style.display = 'block';
+                            console.log(modal);
+                            overlay.style.display = 'block';
+
+                        }
+
+                        function closeModal() {
+                            console.log('Closing modals.');
+
+                            document.querySelectorAll('.modal').forEach(function(modal) {
+                                if (modal) {
+                                    modal.style.display = 'none';
+                                }
+                            });
+
+                            var overlay = document.getElementById('overlay');
+                            if (overlay) {
+                                overlay.style.display = 'none';
+                            } else {
+                                console.error('Overlay element not found.');
+                            }
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+        <th:block id="js">
+            <script th:inline="javascript">
+                let searchData = null;
+                const btnUpdate = document.getElementById('btn-add');
+
+                btnUpdate.addEventListener('click', function () {
+                    const data = searchData;
+                    // Hiển thị dữ liệu trong bảng
+                    const tableBody = document.getElementById('book-list');
+                    const newRow = tableBody.insertRow();
+                    newRow.insertCell().textContent = data.id;
+
+                    const cellTitle = newRow.insertCell();
+                    const titleLink = document.createElement('a');
+                    titleLink.id = 'modal' + data.id;
+                    titleLink.textContent = data.title;
+                    titleLink.setAttribute('data-modal-id', 'modal' + data.id);
+                    titleLink.href = '';
+                    titleLink.classList.add('text-warning','openModalBtn'); // Thêm class 'text-warning' cho thẻ <a>
+                    cellTitle.appendChild(titleLink);
+                    titleLink.addEventListener('click', function (event) {
+                        event.preventDefault(); // Ngăn chặn hành động mặc định của thẻ <a>
+                        openModal();// Gọi hàm mở modal ở đây hoặc thực hiện các hành động khác
+                    });
+                    document.querySelectorAll('.openModalBtn').forEach(function(button) {
+                        button.addEventListener('click', function(event) {
+                            event.preventDefault();
+                            var modalId = button.getAttribute('data-modal-id');
+                            console.log(modalId);
+                            openModal(modalId);
+                        });
+                    });
+
+                    // JavaScript để xử lý sự kiện click để đóng modal
+                    document.getElementById('closeModalBtn').addEventListener('click', function() {
+                        closeModal();
+                    });
+
+                    // JavaScript để ẩn modal khi click ra ngoài modal
+                    document.getElementById('overlay').addEventListener('click', function() {
+                        closeModal();
+                    });
+
+
+                    newRow.insertCell().textContent = data.author.name;
+                    newRow.insertCell().textContent = data.publisher.name;
+                    newRow.insertCell().textContent = data.price;
+
+                    const cellDelete = newRow.insertCell();
+                    const deleteLink = document.createElement('a');
+                    deleteLink.textContent = "Xóa";
+                    deleteLink.href = '';
+                    deleteLink.classList.add('text-error'); // Thêm class 'text-warning' cho thẻ <a>
+                    cellDelete.appendChild(deleteLink);
+                    const req = {
+                        bookId : data.id,
+                        borrowId : document.getElementById('borrowId').value
+                    }
+                    console.log(req);
+                    addToTable(req);
+                    resetSearchInputs();
+                });
+                function openModal(modalId) {
+                    console.log('Attempting to open modal with id:', modalId);
+
+                    var modal = document.getElementById('myModal');
+                    var overlay = document.getElementById('overlay');
+
+                    modal.style.display = 'block';
+                    console.log(modal);
+                    overlay.style.display = 'block';
+
+                }
+
+                function closeModal() {
+                    console.log('Closing modals.');
+
+                    document.querySelectorAll('.modal').forEach(function(modal) {
+                        if (modal) {
+                            modal.style.display = 'none';
+                        }
+                    });
+
+                    var overlay = document.getElementById('overlay');
+                    if (overlay) {
+                        overlay.style.display = 'none';
+                    } else {
+                        console.error('Overlay element not found.');
+                    }
+                }
+
+                function searchBooks() {
+                    // Lấy giá trị từ các input
+                    const bookId = document.getElementById('selectedCategoryContent').value;
+                    const title = document.getElementById('title_search');
+                    const author = document.getElementById('author_search');
+                    const publisher = document.getElementById('publisher_search');
+
+                    if (!bookId) {
+                        toastr.error("Vui lòng nhập thông tin tìm kiếm!");
+                        return;  // Dừng hàm nếu không có ID
+                    }
+                    // Gọi API
+                    fetch(`/api/v1/admin/books/${bookId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                // Nếu không thành công (ví dụ, sách không tồn tại), hiển thị thông báo lỗi
+                                toastr.error("Mã sách không tồn tại! Vui lòng nhập lại.");
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Xử lý dữ liệu trả về từ API
+                            if (Array.isArray(data)) {
+                                // Nếu là mảng, lấy phần tử đầu tiên
+                                data = data.shift;
+                            }
+                            searchData = data;
+                            displayResult(data);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                }
+
+
+                function displayResult(data) {
+                    if (data.length === 0) {
+                        toastr.error("Không có thông tin sách này!");
+                    } else {
+                        document.getElementById('title_search').value = data.title
+                        document.getElementById('author_search').value = data.author.name
+                        document.getElementById('publisher_search').value = data.publisher.name
+                    }
+                }
+                function resetSearchInputs() {
+                    // Reset search input fields
+                    document.getElementById('selectedCategoryContent').value ='';
+                    document.getElementById('title_search').value = '';
+                    document.getElementById('author_search').value = '';
+                    document.getElementById('publisher_search').value = ''
+                }
+                function addToTable(req) {
+                    $.ajax({
+                        url: '/api/v1/admin/borrow-list/add-detail',
+                        type: 'POST',
+                        data: JSON.stringify(req),
+                        contentType: 'application/json',
+                        success: function() {
+                            toastr.success("Thêm sách vào phiếu mượn thành công!");
+                            console.log("Đã thêm sách vào CSDL");
+                        },
+                        error: function() {
+                            console.error("Lỗi khi thêm sách vào CSDL");
+                        }
+                    });
+                    console.log('Thêm sách vào cơ sở dữ liệu:', req);
+                }
+
+                function confirmDelete(message, element) {
+                    // Hiển thị hộp thoại xác nhận
+                    var result = confirm(message);
+                    const borrowId = document.getElementById('borrowId').value;
+
+                    var bookId = element.getAttribute('data-book-id');
+                    console.log(borrowId + "        " + bookId);
+                    // Nếu người dùng chọn OK trong hộp thoại xác nhận
+                    if (result) {
+                        console.log("co vao day");
+                        // Gọi API để xóa BorrowManagementDetail
+                        $.ajax({
+                            url: '/api/v1/admin/borrow-list/delete', // Thay đổi URL tùy thuộc vào đường dẫn của API của bạn
+                            type: 'DELETE',
+                            data: { bookId: bookId ,
+                                    borrowId : borrowId
+                                },
+                            success: function () {
+                                toastr.success("Xóa thành công!");
+                                updateTable();
+                            },
+                            error: function () {
+                                toastr.error("Xóa thất bại!");
+                            }
+                        });
+                    }
+                }
+
+                function updateTable() {
+                    // Thực hiện cập nhật nội dung của bảng ở đây
+                    // Ví dụ: có thể làm mới trang hoặc thực hiện yêu cầu AJAX để lấy dữ liệu mới
+                    location.reload(); // Ví dụ đơn giản: làm mới trang
+                }
+
+            </script>
+        </th:block>
+    </body>
+</html>
